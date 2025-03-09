@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, {
   useState,
   Children,
@@ -13,12 +13,14 @@ interface SliderProps {
   children: ReactNode;
   autoPlay?: boolean;
   interval?: number;
+  direction?: 'horizontal' | 'vertical';
 }
 
 const Slider: React.FC<SliderProps> = ({
   children,
   autoPlay = true,
   interval = 3000,
+  direction = "horizontal",
 }) => {
   const slidesArray = Children.toArray(children);
   const totalSlides = slidesArray.length;
@@ -40,27 +42,32 @@ const Slider: React.FC<SliderProps> = ({
     return () => clearInterval(timer);
   }, [autoPlay, interval, nextSlide]);
 
+  const transformStyle = direction === 'horizontal'
+    ? { transform: `translateX(-${currentIndex * 100}%)` } 
+    : { transform: `translateY(-${currentIndex * 100}%)` };
+
   return (
     <div className="relative w-full h-full overflow-hidden">
       <div
-        className="flex h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        className={`flex h-full ${direction === 'vertical' ? 'flex-col' : ''} transition-transform duration-500 ease-in-out`}
+        style={transformStyle}
       >
         {slidesArray.map((child, index) => (
-          <div key={index} className="w-full shrink-0">
+          <div key={index} className="w-full h-full shrink-0">
             {child}
           </div>
         ))}
       </div>
 
       {/* Navigation component containing next and previous arrows */}
-      <Navigation prevSlide={prevSlide} nextSlide={nextSlide} />
+      <Navigation prevSlide={prevSlide} nextSlide={nextSlide} direction={direction} />
 
       {/* Indicator component containing dots */}
       <Indicators
         currentIndex={currentIndex}
         slidesArray={slidesArray}
         setCurrentIndex={setCurrentIndex}
+        direction={direction}
       />
     </div>
   );
