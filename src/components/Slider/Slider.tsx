@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import Navigation from "./SliderNavigation";
 import Indicators from "./SliderIndicator";
@@ -15,27 +16,38 @@ interface SliderProps {
   interval?: number;
   direction?: "horizontal" | "vertical";
   itemsPerSlide?: number;
+  infinite: boolean;
 }
 
 const Slider: React.FC<SliderProps> = ({
   children,
-  autoPlay = true,
+  autoPlay = false,
   interval = 3000,
-  direction = "horizontal",
-  itemsPerSlide = 2,
+  direction = "vertical",
+  itemsPerSlide = 1,
+  infinite = true,
 }) => {
   const slidesArray = Children.toArray(children);
   const totalSlides = slidesArray.length;
   const totalGroups = Math.ceil(totalSlides / itemsPerSlide);
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+  const [startPos, setStartPos] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % totalGroups);
-  }, [totalGroups]);
+    setCurrentIndex((prev) => {
+      if (infinite) return (prev + 1) % totalGroups;
+      return prev < totalGroups - 1 ? prev + 1 : prev;
+    });
+  }, [totalGroups, infinite]);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + totalGroups) % totalGroups);
-  }, [totalGroups]);
+    setCurrentIndex((prev) => {
+      if (infinite) return (prev - 1 + totalGroups) % totalGroups;
+      return prev > 0 ? prev - 1 : prev;
+    });
+  }, [totalGroups, infinite]);
 
   /****************  Auto-play functionality function *****************************/
   useEffect(() => {
@@ -53,13 +65,51 @@ const Slider: React.FC<SliderProps> = ({
     return grouped;
   };
 
+  /**************** Handle Swipe Gesture ****************/
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartPos(
+      direction === "horizontal" ? e.touches[0].clientX : e.touches[0].clientY
+    );
+    setIsDragging(true);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const endPos =
+      direction === "horizontal"
+        ? e.changedTouches[0].clientX
+        : e.changedTouches[0].clientY;
+    if (startPos - endPos > 50) nextSlide(); // Swipe left or up
+    if (startPos - endPos < -50) prevSlide(); // Swipe right or down
+    setIsDragging(false);
+  };
+
+  /**************** Handle Mouse Drag Gesture ****************/
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setStartPos(direction === "horizontal" ? e.clientX : e.clientY);
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const endPos = direction === "horizontal" ? e.clientX : e.clientY;
+    if (startPos - endPos > 50) nextSlide();
+    if (startPos - endPos < -50) prevSlide();
+    setIsDragging(false);
+  };
   const transformStyle =
     direction === "horizontal"
       ? { transform: `translateX(-${currentIndex * 100}%)` }
       : { transform: `translateY(-${currentIndex * 100}%)` };
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div
+      className="relative w-full h-full overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
       <div
         className={`flex h-full ${
           direction === "vertical" ? "flex-col" : ""
@@ -87,7 +137,6 @@ const Slider: React.FC<SliderProps> = ({
       {/* Indicator component containing dots */}
       <Indicators
         currentIndex={currentIndex}
-        // slidesArray={slidesArray}
         groupedSlides={groupedSlides()}
         setCurrentIndex={setCurrentIndex}
         direction={direction}
