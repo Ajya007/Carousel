@@ -16,7 +16,7 @@ interface SliderProps {
   interval?: number;
   direction?: "horizontal" | "vertical";
   itemsPerSlide?: number;
-  infinite: boolean;
+  infinite?: boolean;
 }
 
 const Slider: React.FC<SliderProps> = ({
