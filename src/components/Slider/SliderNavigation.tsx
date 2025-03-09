@@ -18,7 +18,7 @@ const Navigation: React.FC<NavigationProps> = ({
           direction === "horizontal"
             ? "top-1/2 left-4"
             : "top-4 left-1/2 transform -translate-x-1/2"
-        } bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition`}
+        } bg-gray-400 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition`}
         onClick={prevSlide}
         aria-label="Previous Slide"
       >
@@ -29,7 +29,7 @@ const Navigation: React.FC<NavigationProps> = ({
           direction === "horizontal"
             ? "top-1/2 right-4"
             : "bottom-4 left-1/2 transform -translate-x-1/2"
-        } bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition`}
+        } bg-gray-400 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition`}
         onClick={nextSlide}
         aria-label="Next Slide"
       >

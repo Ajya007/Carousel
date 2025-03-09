@@ -10,22 +10,27 @@ import React, {
 import Navigation from "./SliderNavigation";
 import Indicators from "./SliderIndicator";
 
+type SliderOrientation = "horizontal" | "vertical";
+type SliderNavigationType = "dots" | "arrows" | "both" | "none";
 interface SliderProps {
   children: ReactNode;
   autoPlay?: boolean;
   interval?: number;
-  direction?: "horizontal" | "vertical";
+  direction?: SliderOrientation;
   itemsPerSlide?: number;
   infinite?: boolean;
+  navigationType?: SliderNavigationType;
 }
 
 const Slider: React.FC<SliderProps> = ({
   children,
   autoPlay = false,
   interval = 3000,
-  direction = "vertical",
+  direction = "horizontal",
   itemsPerSlide = 1,
   infinite = true,
+  navigationType = "both",
+
 }) => {
   const slidesArray = Children.toArray(children);
   const totalSlides = slidesArray.length;
@@ -33,7 +38,6 @@ const Slider: React.FC<SliderProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startPos, setStartPos] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => {
@@ -103,44 +107,57 @@ const Slider: React.FC<SliderProps> = ({
       : { transform: `translateY(-${currentIndex * 100}%)` };
 
   return (
-    <div
-      className="relative w-full h-full overflow-hidden"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-    >
+    
+    <div className="w-full h-full relative  py-14 px-14">
+      <a href="#slider-skip" className="text-primary absolute w-1 h-1 border-0 p-0 m-[-1px] overflow-hidden clip-rect focus:w-auto focus:h-auto focus:clip-none focus:z-50 focus:bg-white focus:p-2 focus:border-2 focus:border-black focus:outline-none">Skip Carousel Controls</a>
       <div
-        className={`flex h-full ${
-          direction === "vertical" ? "flex-col" : ""
-        } transition-transform duration-500 ease-in-out`}
-        style={transformStyle}
+        className="w-full h-full overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
       >
-        {groupedSlides().map((group, index) => (
-          <div key={index} className="w-full h-full shrink-0 flex">
-            {group.map((child, childIndex) => (
-              <div key={childIndex} className="w-full h-full">
-                {child}
-              </div>
-            ))}
-          </div>
-        ))}
+        <div
+          className={`flex h-full ${
+            direction === "vertical" ? "flex-col" : ""
+          } transition-transform duration-500 ease-in-out`}
+          style={transformStyle}
+        >
+          {groupedSlides().map((group, index) => (
+            <div
+              aria-hidden={index !== currentIndex}
+              key={index}
+              className="w-full h-full shrink-0 flex"
+            >
+              {group.map((child, childIndex) => (
+                <div key={childIndex} className="w-full h-full">
+                  {child}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation component containing next and previous arrows */}
+        {(navigationType === "both" || navigationType === "arrows") && (
+          <Navigation
+            prevSlide={prevSlide}
+            nextSlide={nextSlide}
+            direction={direction}
+          />
+        )}
+
+        {/* Indicator component containing dots */}
+        {(navigationType === "both" || navigationType === "dots") && (
+          <Indicators
+            currentIndex={currentIndex}
+            groupedSlides={groupedSlides()}
+            setCurrentIndex={setCurrentIndex}
+            direction={direction}
+          />
+        )}
       </div>
-
-      {/* Navigation component containing next and previous arrows */}
-      <Navigation
-        prevSlide={prevSlide}
-        nextSlide={nextSlide}
-        direction={direction}
-      />
-
-      {/* Indicator component containing dots */}
-      <Indicators
-        currentIndex={currentIndex}
-        groupedSlides={groupedSlides()}
-        setCurrentIndex={setCurrentIndex}
-        direction={direction}
-      />
+      <div id="slider-skip"></div>
     </div>
   );
 };

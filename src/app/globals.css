@@ -25,3 +25,9 @@ body {
     text-wrap: balance;
   }
 }
+
+@layer components {
+  .slide {
+    @apply w-full h-full
+  }
+}
