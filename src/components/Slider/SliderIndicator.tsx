@@ -1,20 +1,27 @@
-'use client';
-
+"use client";
 import React from "react";
-
 interface IndicatorsProps {
   currentIndex: number;
-  slidesArray: React.ReactNode[];
+  groupedSlides: React.ReactNode[][];
   setCurrentIndex: (index: number) => void;
-  direction: 'horizontal' | 'vertical';
+  direction: "horizontal" | "vertical";
 }
 
-const Indicators: React.FC<IndicatorsProps> = ({ currentIndex, slidesArray, setCurrentIndex, direction }) => {
+const Indicators: React.FC<IndicatorsProps> = ({
+  currentIndex,
+  groupedSlides,
+  setCurrentIndex,
+  direction,
+}) => {
   return (
     <div
-    className={`absolute ${direction === 'horizontal' ? 'bottom-4 left-1/2 transform -translate-x-1/2' : 'top-1/2 right-4 transform -translate-y-1/2'} flex ${direction === 'vertical' ? 'flex-col gap-2' : 'gap-2'}`}
+      className={`absolute ${
+        direction === "horizontal"
+          ? "bottom-4 left-1/2 transform -translate-x-1/2"
+          : "top-1/2 right-4 transform -translate-y-1/2"
+      } flex ${direction === "vertical" ? "flex-col gap-2" : "gap-2"}`}
     >
-      {slidesArray.map((_, index) => (
+      {groupedSlides.map((_, index) => (
         <button
           key={index}
           onClick={() => setCurrentIndex(index)}

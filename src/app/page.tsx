@@ -12,6 +12,9 @@ export default function Home() {
             <div className="w-full h-full bg-red-500">Slide 1</div>
             <div className="w-full h-full bg-blue-500">Slide 2</div>
             <div className="w-full h-full bg-green-500">Slide 3</div>
+            <div className="w-full h-full bg-red-500">Slide 4</div>
+            <div className="w-full h-full bg-blue-500">Slide 5</div>
+            <div className="w-full h-full bg-green-500">Slide 6</div>
           </Slider>
         </div>
       </section>
