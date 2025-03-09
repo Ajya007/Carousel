@@ -5,7 +5,6 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
 } from "react";
 import Navigation from "./SliderNavigation";
 import Indicators from "./SliderIndicator";

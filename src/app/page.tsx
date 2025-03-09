@@ -9,7 +9,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData("https://jsonplaceholder.typicode.com/users");
-  }, []);
+  }, [fetchData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 px-6 md:px-8 py-12">
@@ -109,6 +109,7 @@ export default function Home() {
             <Slider>
               {data.map((item, i) => (
                 <div
+                key={i}
                   className="slide flex justify-center flex-col items-center"
                   style={{
                     backgroundColor: generateRandomColor(),

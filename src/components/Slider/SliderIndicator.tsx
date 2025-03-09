@@ -29,7 +29,6 @@ const Indicators: React.FC<IndicatorsProps> = ({
             currentIndex === index ? "bg-lime-400 scale-125" : "bg-gray-400"
           }`}
           aria-label={`Go to slide ${index + 1}`}
-          aria-selected={currentIndex === index}
         />
       ))}
     </div>

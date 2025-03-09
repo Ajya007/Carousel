@@ -3,7 +3,8 @@ import axios from 'axios';
 
 // Define the types for your store state
 interface Store {
-  data: any[] | null | undefined;
+// eslint-disable-next-line
+  data: any[] | null;
   loading: boolean;
   error: string | null;
   fetchData: (url: string) => Promise<void>;
